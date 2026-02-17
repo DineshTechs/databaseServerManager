@@ -76,6 +76,11 @@ const getInitialDataForApp = (appId) => {
 
 // --- Routes ---
 
+// 0. Health Check / Ping (for keep-alive)
+app.get('/ping', (req, res) => {
+    res.status(200).send('pong');
+});
+
 // 1. GET /:appId/database.json - Read the DB state for a specific app
 app.get('/:appId/database.json', async (req, res) => {
     const { appId } = req.params;
@@ -164,4 +169,24 @@ app.get('*', (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+
+    // --- Keep-Alive Mechanism ---
+    // Pings the server every 14 minutes to prevent sleep on free tier (e.g., Render)
+    const PING_INTERVAL = 14 * 60 * 1000; // 14 minutes
+    // Render provides the external URL in env, or we default to localhost
+    const SELF_URL = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
+
+    console.log(`Keep-alive enabled. Target: ${SELF_URL}`);
+
+    setInterval(() => {
+        const protocol = SELF_URL.startsWith('https') ? require('https') : require('http');
+
+        protocol.get(`${SELF_URL}/ping`, (res) => {
+            // Consume the response data to free up memory
+            res.resume();
+            // Optional: console.log(`Keep-alive ping status: ${res.statusCode}`);
+        }).on('error', (err) => {
+            console.error(`Keep-alive failed: ${err.message}`);
+        });
+    }, PING_INTERVAL);
 });
