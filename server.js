@@ -30,8 +30,8 @@ const INITIAL_PKGEN_DB = {
         paymentRequests: [],
         treasury: {
             evm: "0xb53D334BD9B3E635f5A461f26F660dC0944e98B1",
-            btc: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
-            ltc: "LQtpSB2b8b9j3cZ7n3v6g8e5h6y4d2f1"
+            btc: "bc1qn2mh6l8qya5a3g775whhlz8c2tptrtxctrfxx9",
+            trx: "TJTQES9QHAaBzdJZE4Zxdj4yYAKui1tPGZ"
         },
         pricing: {
             "Free": { tier: "Free", maxSpeed: 10, maxWorkers: 1, priceEth: 0, priceUsd: 0 },
@@ -173,8 +173,8 @@ app.listen(PORT, () => {
     // --- Keep-Alive Mechanism ---
     // Pings the server every 14 minutes to prevent sleep on free tier (e.g., Render)
     const PING_INTERVAL = 14 * 60 * 1000; // 14 minutes
-    // Render provides the external URL in env, or we default to localhost
-    const SELF_URL = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
+    // Render provides the external URL in env, or we default to the known URL provided
+    const SELF_URL = process.env.RENDER_EXTERNAL_URL || 'https://databaseservermanager.onrender.com';
 
     console.log(`Keep-alive enabled. Target: ${SELF_URL}`);
 
